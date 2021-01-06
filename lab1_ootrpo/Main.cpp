@@ -1,11 +1,23 @@
 // Этот файл содержит функцию "main".Здесь начинается и заканчивается выполнение программы.
 
-
 #include <iostream>
+#include "PRNG.h"
 
-int main()
+void main()
 {
-    std::cout << "Hello World!\n";
+    PRNG prng;
+    vector<double> sequence;
+    string errorMessage = "";
+    int number = 10;
+    bool result = prng.GetSequence(number, &sequence, &errorMessage);
+    if(result == false)
+        cout << errorMessage << endl;
+    else
+        for(int i = 0; i < number; i++)
+        {
+            cout << sequence[i] << endl;
+
+        }
 }
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
