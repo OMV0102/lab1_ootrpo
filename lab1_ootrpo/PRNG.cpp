@@ -29,7 +29,7 @@ bool PRNG::GetSequence(int size, vector<double>*sequence, string *errorMessage)
 	}
 	catch(const char *msg)
 	{
-		*errorMessage = string(msg);
+		*errorMessage = "Ошибка: " + string(msg);
 		return false;
 	}
 	return true;
