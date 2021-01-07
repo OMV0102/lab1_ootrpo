@@ -31,12 +31,28 @@ double Statistics::SumElements(vector<double> elements)
     return sum;
 }
 
-// Возвращает среднее арифметическое элементов последовательности
+// Возвращает среднее арифметическое элементов последовательности (Мат. ожидание)
 double Statistics::GetMean(vector<double> elements)
 {
     double mean = 0.0;
     mean = this->SumElements(elements) / (double) elements.size();
     return mean;
+}
+
+// Подсчет дисперсии числовой последовательности
+double Statistics::GetDispersion(vector<double> elements)
+{
+    double mean = this->GetMean(elements);
+    double disp = 0.0;
+    int N = elements.size();
+    // подсчет мат. ожидания как sum(elem[i]^2)/N - mean^2
+    for(int i = 0; i < N; i++)
+    {
+        disp += pow(elements[i] - mean, 2.0);
+    }
+    disp /= (double) N;
+
+    return disp;
 }
 
 // Подсчет медианы последовательности
@@ -84,7 +100,7 @@ double Statistics::GetWinsorizedMean(vector<double> elements, double percent)
     // замена k элементов в начале и конце на k+1 (или N-k-1)
     for(int i = 0; i < k; i++)
     {
-        elements[i] = elements[k+1];
+        elements[i] = elements[k];
         elements[N-1-i] = elements[N-1-k];
     }
     // подсчет обычного среднего без удаленных элементов

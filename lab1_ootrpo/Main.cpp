@@ -34,6 +34,6 @@ void main()
 
     }
     stat.GetTrimmedMean(sequence, 0.15);
-    
-}
+    stat.GetWinsorizedMean(sequence, 0.25);
+    }
 
