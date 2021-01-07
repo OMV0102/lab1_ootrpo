@@ -27,7 +27,7 @@ void main()
     double median = stat.GetMedian(sequence);
     cout << "\nmedian = " << median << endl;
     
-    sequence = stat.SortVector(sequence);
+    sequence = stat.SortVector(sequence, true);
     for(int i = 0; i < number; i++)
     {
         cout << sequence[i] << endl;
