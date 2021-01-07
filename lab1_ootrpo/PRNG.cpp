@@ -42,7 +42,7 @@ double PRNG::GetV()
 bool PRNG::SetV(double vNew)
 {
 	if(vNew < 0.0)
-		return false;
+		throw "Параметр v должен быть не отрицательным!";
 	else
 		this->v = vNew;
 
@@ -55,10 +55,10 @@ double PRNG::GetAlpha()
 }
 bool PRNG::SetAlpha(double alphaNew)
 {
-	if(alphaNew < 0.0 || (fabs(alphaNew) < this->delta))
-		return false;
-	else
+	if(alphaNew > 0.0)
 		this->alpha = alphaNew;
+	else
+		throw "Параметр альфа должен быть только положительным!";
 
 	return true;
 }
@@ -69,10 +69,10 @@ double PRNG::GetBeta()
 }
 bool PRNG::SetBeta(double betaNew)
 {
-	if(betaNew < 0.0 || (fabs(betaNew) < this->delta))
-		return false;
-	else
+	if(betaNew > 0.0)
 		this->beta = betaNew;
+	else
+		throw "Параметр бета должен быть только положительным!";
 
 	return true;
 }

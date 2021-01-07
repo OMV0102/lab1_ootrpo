@@ -33,6 +33,7 @@ void main()
         cout << sequence[i] << endl;
 
     }
+    stat.GetTruncatedMean(sequence, 0.15);
     
 }
 
