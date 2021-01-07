@@ -11,7 +11,8 @@ void main()
     prng.SetV(0.5);
     vector<double> sequence;
     string errorMessage = "";
-    int number = 20;
+    int number = 10;
+    Statistics stat;
     bool result = prng.GetSequence(number, &sequence, &errorMessage);
     setlocale(LC_ALL, "Russian");
     if(result == false)
@@ -19,22 +20,19 @@ void main()
     else
         for(int i = 0; i < number; i++)
         {
-            //cout << sequence[i] << endl;
+            cout << sequence[i] << endl;
 
         }
-    double sum = 0.0;
-    for_each(sequence.begin(), sequence.end(), [&](double elem)
+    
+    double median = stat.GetMedian(sequence);
+    cout << "\nmedian = " << median << endl;
+    
+    sequence = stat.SortVector(sequence);
+    for(int i = 0; i < number; i++)
     {
-        sum += abs(elem);
-    });
-    sum /= (double)sequence.size();
-    cout << "sum1 = " << sum << endl;
-    sum = 0.0;
-    for(int i = 0; i < sequence.size(); i++)
-    {
-        sum +=abs(sequence[i]);
+        cout << sequence[i] << endl;
+
     }
-    sum /= (double) sequence.size();
-    cout << "sum2 = " << sum << endl;
+    
 }
 

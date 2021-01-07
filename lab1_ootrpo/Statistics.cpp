@@ -27,15 +27,30 @@ double Statistics::MeanElements(vector<double> elements)
 
 double Statistics::GetExpectedValue(vector<double> elements)
 {
-
+    return 0.0;
 }
 
 double Statistics::GetDispersion(vector<double> elements)
 {
-
+    return 0.0;
 }
 
 double Statistics::GetMedian(vector<double> elements)
 {
+    double median = 0.0;
+    int N = elements.size();
+    if(N % 2 != 0) // для нечетного числа элементов
+        median = elements.at(N / 2);
+    else
+    {
+        median = (elements.at(N/2 - 1) + elements.at(N/2)) / 2.0;
+    }
 
+    return median;
+}
+
+vector<double> Statistics::SortVector(vector<double> elements)
+{
+    sort(elements.begin(), elements.end());
+    return elements;
 }

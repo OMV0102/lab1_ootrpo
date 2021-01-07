@@ -16,6 +16,8 @@ class Statistics
 	double GetExpectedValue(vector<double> elements);
 	double GetDispersion(vector<double> elements);
 	double GetMedian(vector<double> elements);
+	vector<double> SortVector(vector<double> elements);
 
 	private:
+	
 };
