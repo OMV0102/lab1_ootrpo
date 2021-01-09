@@ -7,6 +7,7 @@ using namespace std;
 
 void main()
 {
+    cout << cout.precision() << endl;
     PRNG prng;
     prng.SetV(0.5);
     vector<double> sequence;
@@ -35,5 +36,6 @@ void main()
     }
     stat.GetTrimmedMean(sequence, 0.15);
     stat.GetWinsorizedMean(sequence, 0.25);
-    }
+    cout << "\nbeta = " << stat.Beta(1.5, 1.5) << endl;
+}
 

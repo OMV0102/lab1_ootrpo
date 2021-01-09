@@ -107,3 +107,61 @@ double Statistics::GetWinsorizedMean(vector<double> elements, double percent)
     trMean = this->GetMean(elements);
     return trMean;
 }
+
+// Функция разбивает последовательность на интервалы для критерия хи^2
+void Statistics::DivideOnIntervals(vector<double> elements)
+{
+    vector<pair<double, double>> intervals;
+    intervals.push_back(make_pair(1.5, 1.6));
+    make_pair(1.5, 1.6);
+    int elemSize = elements.size(); // размер последовательности
+    int N = 1; // количество интервалов
+
+    // определение начального размера одного интервала
+    // ...
+}
+
+// Логарифм гамма-функции
+double Statistics::GammLn(double x)
+{
+    double y, ser, *co;
+    int j;
+    // вычисление последовательностей
+    ser = cof[1];
+    y = x;
+    co = cof + 2;
+    for(j = 2; j < cofSize; j++)
+    {
+        y += 1.;
+        ser += (*co) / y;
+        co++;
+    }
+    // и других частей функции
+    y = x + 5.5;
+    y -= (x + 0.5) * log(y);
+    y = -y + log(cof[0] *ser / x);
+    return y;
+}
+
+// Таблица коэффициентов для GammaLn
+double Statistics::cof[cofSize] = {
+    2.5066282746310005,
+    1.0000000000190015,
+    76.18009172947146,
+    -86.50532032941677,
+    24.01409824083091,
+    -1.231739572450155,
+    0.1208650973866179e-2,
+    -0.5395239384953e-5};
+
+// Гамма-функция
+double Statistics::Gamma(double x)
+{
+    return(exp(GammLn(x)));
+}
+
+// Бета-функция
+double Statistics::Beta(double x, double y)
+{
+    return(exp(GammLn(x) + GammLn(y) - GammLn(x + y)));
+}
