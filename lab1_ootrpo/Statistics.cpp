@@ -109,16 +109,71 @@ double Statistics::GetWinsorizedMean(vector<double> elements, double percent)
 }
 
 // ‘ункци€ разбивает последовательность на интервалы дл€ критери€ хи^2
-void Statistics::DivideOnIntervals(vector<double> elements)
+vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
 {
-    vector<pair<double, double>> intervals;
-    intervals.push_back(make_pair(1.5, 1.6));
-    make_pair(1.5, 1.6);
-    int elemSize = elements.size(); // размер последовательности
-    int N = 1; // количество интервалов
+    vector<intervalStruct> intervals;
+    int elemNum = elements.size(); // количество элементов в последовательности
+    int intervalNum = 2; // количество интервалов
 
-    // определение начального размера одного интервала
-    // ...
+    // определение начального количества интервалов
+    if(elemNum >= 40 && elemNum <= 100)
+        intervalNum = 10;
+    else if(elemNum >=100  && elemNum <= 500)
+        intervalNum = 15;
+    else if(elemNum >= 500 && elemNum <= 1000)
+        intervalNum = 20;
+    else if(elemNum >= 1000 && elemNum <= 10000)
+        intervalNum = 25;
+    else if(elemNum >= 1000)
+        intervalNum = 30;
+
+    while(true)
+    {
+        if(this->CheckNonZeroInterval(elements, intervalNum, &intervals) == true)
+            break;
+        else
+        {
+            intervalNum--;
+        }
+    }
+
+    return intervals;
+
+}
+
+// ѕроверка. что в каждом интервале есть хот€ бы одно попадание
+// ≈сли кол-во интервалов верно выбрано (return true), то в intervals буду границы интервалов
+bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals)
+{
+    double intervalSize = 0.0; // –азмер одного интервала
+    vector<intervalStruct> vectorTemp; // временный вектор дл€ хранени€ интервалов
+    intervalStruct temp;
+    bool result = true; // результат разделени€ последовательности на интервалы
+    int elemNumAll = elements.size(); // количество элементов в последовательности
+    intervalSize = (elements[elemNumAll - 1] - elements[0]) / (double) intervalNum;
+    elements = this->SortVector(elements, true); // сортируем элементы по возрастанию
+    
+    
+    int i = 0;
+    while(result == true && i < intervalNum)
+    {
+        temp.elemNumber = 0;
+        temp.left = elements[0] + i * intervalSize;
+        temp.right = elements[0] + (double)(i+1) * intervalSize;
+        int j = 0;
+        if(i == 0) { temp.elemNumber++; j++; } // первый элемент[0] в любом случае будет в первом интервале
+        for(j; j < elemNumAll; j++)
+        {
+            if(temp.left < elements[j] && elements[j] <= temp.right)
+                temp.elemNumber++;
+        }
+        vectorTemp.push_back(temp);
+        if(temp.elemNumber < 1) result = false;
+        i++;
+    }
+    if(result == true) *intervals = vectorTemp;
+
+    return result;
 }
 
 // Ћогарифм гамма-функции

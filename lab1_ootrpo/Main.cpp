@@ -7,12 +7,11 @@ using namespace std;
 
 void main()
 {
-    cout << cout.precision() << endl;
     PRNG prng;
     prng.SetV(0.5);
     vector<double> sequence;
     string errorMessage = "";
-    int number = 10;
+    int number = 1000;
     Statistics stat;
     bool result = prng.GetSequence(number, &sequence, &errorMessage);
     setlocale(LC_ALL, "Russian");
@@ -21,7 +20,7 @@ void main()
     else
         for(int i = 0; i < number; i++)
         {
-            cout << sequence[i] << endl;
+            //cout << sequence[i] << endl;
 
         }
     
@@ -37,5 +36,8 @@ void main()
     stat.GetTrimmedMean(sequence, 0.15);
     stat.GetWinsorizedMean(sequence, 0.25);
     cout << "\nbeta = " << stat.Beta(1.5, 1.5) << endl;
+    vector<intervalStruct> intervals;
+    bool res = stat.CheckNonZeroInterval(sequence, 25, &intervals);
+    cout << "\nres = " << res << endl;
 }
 
