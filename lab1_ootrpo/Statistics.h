@@ -35,9 +35,12 @@ class Statistics
 	double GetWinsorizedMean(vector<double> elements, double percent);
 	vector<intervalStruct> DivideOnIntervals(vector<double> elements);
 	bool CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals);
+	bool CheckChiSquaredTest(vector<intervalStruct> intervals);
+	//double F(double x);
 	double Beta(double x, double y); // Вычисление бета - функции для x > 0, y > 0
+	double Gamma(double x); // Вычисление гамма - функции для x > 0	
 	
 	private:
 	double GammLn(double x); // Вычисление логарифма гамма - функции для x > 0
-	double Gamma(double x); // Вычисление гамма - функции для x > 0	
+	
 };

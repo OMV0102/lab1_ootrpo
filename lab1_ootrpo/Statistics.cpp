@@ -134,6 +134,7 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
         else
         {
             intervalNum--;
+            if(intervalNum == 1) break; // мин разбитие это 2 интервала (страховка от отрицательного числа)
         }
     }
 
@@ -172,6 +173,19 @@ bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, 
         i++;
     }
     if(result == true) *intervals = vectorTemp;
+
+    return result;
+}
+
+bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals)
+{
+    double s = 0.0; // Вычисляема статистика критерия
+    int N = intervals.size(); // количетсво интервалов
+    bool result = false; // Результат проверки статитсики по критерию
+    for(int i = 0; i < N; i++)
+    {
+
+    }
 
     return result;
 }
