@@ -12,7 +12,7 @@ void main()
     vector<double> sequence;
     string errorMessage = "";
     int number = 1000;
-    Statistics stat;
+    Statistics stat = Statistics(prng.GetV());
     bool result = prng.GetSequence(number, &sequence, &errorMessage);
     setlocale(LC_ALL, "Russian");
     if(result == false)
@@ -33,16 +33,16 @@ void main()
         cout << sequence[i] << endl;
 
     }
-    //stat.GetTrimmedMean(sequence, 0.15);
-    //stat.GetWinsorizedMean(sequence, 0.25);
-    //cout << "\nbeta = " << stat.Beta(1.5, 1.5) << endl;
-    //vector<intervalStruct> intervals;
-    //bool res = stat.CheckNonZeroInterval(sequence, 25, &intervals);
-    //cout << "\nres = " << res << endl;
-
-    double res = sqrt(3.14159265358979323846) * stat.Gamma(5);
-    res /= 2.0;
-    res /= stat.Gamma(5.5);
+    stat.GetTrimmedMean(sequence, 0.15);
+    stat.GetWinsorizedMean(sequence, 0.25);
+    cout << "\nbeta = " << stat.Beta(1.5, 1.5) << endl;
+    vector<intervalStruct> intervals;
+    bool res = stat.CheckNonZeroInterval(sequence, 25, &intervals);
     cout << "\nres = " << res << endl;
+
+    //double res = sqrt(3.14159265358979323846) * stat.Gamma(5);
+    //res /= 2.0;
+    //res /= stat.Gamma(5.5);
+    //cout << "\nres = " << res << endl;
 }
 

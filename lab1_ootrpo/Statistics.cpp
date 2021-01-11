@@ -3,8 +3,12 @@
 #include "Statistics.h"
 using namespace std;
 
-// конструктор по умолчанию
-Statistics::Statistics(){}
+// конструктор
+Statistics::Statistics(double vParam)
+{
+    this->v = vParam;
+    this->betaValue = this->Beta(vParam + 1.0, vParam + 1.0);
+}
 // деструктор по умолчанию
 Statistics::~Statistics(){}
 
@@ -177,15 +181,19 @@ bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, 
     return result;
 }
 
-bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals)
+bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals, int n)
 {
-    double s = 0.0; // ¬ычисл€ема статистика критери€
-    int N = intervals.size(); // количетсво интервалов
-    bool result = false; // –езультат проверки статитсики по критерию
+    double s = 0.0; // ¬ычисл€ема€ статистика критери€
+    int N = intervals.size(); // количество интервалов
+    bool result = false; // –езультат проверки статистики по критерию
     for(int i = 0; i < N; i++)
     {
-
+        double p = this->Probability(intervals[i].left, intervals[i].right);
+        s += pow(intervals[i].elemNumber/n - p, 2.0) / p;
     }
+    s *= (double) n;
+
+    // TODO добавить сравнение результата с статистикой табличной
 
     return result;
 }

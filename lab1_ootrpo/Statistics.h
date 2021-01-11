@@ -15,7 +15,7 @@ static struct intervalStruct
 class Statistics
 {
 	public:
-	Statistics(); // конструктор по умолчанию
+	Statistics(double v); // конструктор
 	~Statistics(); // деструктор по умолчанию
 
 	// поля класса
@@ -23,6 +23,8 @@ class Statistics
 	private:
 	static const int cofSize = 8; // размер таблицы коэффициентов
 	static double cof[cofSize]; // таблица коэффициентов для GammaLn
+	double v; // параметр формы;
+	double betaValue; // параметр формы;
 
 	// методы класса
 	public:
@@ -35,12 +37,14 @@ class Statistics
 	double GetWinsorizedMean(vector<double> elements, double percent);
 	vector<intervalStruct> DivideOnIntervals(vector<double> elements);
 	bool CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals);
-	bool CheckChiSquaredTest(vector<intervalStruct> intervals);
-	//double F(double x);
+	bool CheckChiSquaredTest(vector<intervalStruct> intervals, int n);
+	double Probability(double a, double b); // вычисление вероятности
+	//double Integral(double a, double b, int stepCount); // вычисление интеграла
 	double Beta(double x, double y); // Вычисление бета - функции для x > 0, y > 0
 	double Gamma(double x); // Вычисление гамма - функции для x > 0	
 	
 	private:
 	double GammLn(double x); // Вычисление логарифма гамма - функции для x > 0
+
 	
 };
