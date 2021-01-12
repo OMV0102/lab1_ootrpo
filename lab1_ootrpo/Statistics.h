@@ -19,7 +19,6 @@ class Statistics
 	~Statistics(); // деструктор по умолчанию
 
 	// поля класса
-	public:
 	private:
 	static const int cofSize = 8; // размер таблицы коэффициентов
 	static double cof[cofSize]; // таблица коэффициентов для GammaLn
@@ -38,8 +37,8 @@ class Statistics
 	vector<intervalStruct> DivideOnIntervals(vector<double> elements);
 	bool CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals);
 	bool CheckChiSquaredTest(vector<intervalStruct> intervals, int n);
-	double Probability(double a, double b); // вычисление вероятности
-	//double Integral(double a, double b, int stepCount); // вычисление интеграла
+	double f(double x); // вычисление значения функции плотности распределения Пирсона II типа
+	double Probability(double a, double b, int stepCount); // вычисление вероятности (методом трапеций численного интегрирования)
 	double Beta(double x, double y); // Вычисление бета - функции для x > 0, y > 0
 	double Gamma(double x); // Вычисление гамма - функции для x > 0	
 	

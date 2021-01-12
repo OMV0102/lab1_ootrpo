@@ -128,7 +128,7 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
         intervalNum = 20;
     else if(elemNum >= 1000 && elemNum <= 10000)
         intervalNum = 25;
-    else if(elemNum >= 1000)
+    else if(elemNum >= 10000)
         intervalNum = 30;
 
     while(true)
@@ -146,7 +146,7 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
 
 }
 
-// Проверка. что в каждом интервале есть хотя бы одно попадание
+// Проверка, что в каждом интервале есть хотя бы одно попадание
 // Если кол-во интервалов верно выбрано (return true), то в intervals буду границы интервалов
 bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals)
 {
@@ -181,21 +181,55 @@ bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, 
     return result;
 }
 
+// Проверка сгенерированной последовательности методом хи-квадрат Пирсона
+// n - количество элементов с генерированной последовательности
 bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals, int n)
 {
     double s = 0.0; // Вычисляемая статистика критерия
     int N = intervals.size(); // количество интервалов
+    double p = 0.0; // вероятность
+    double pSum = 0.0; // сумма вероятностей всех
     bool result = false; // Результат проверки статистики по критерию
     for(int i = 0; i < N; i++)
     {
-        double p = this->Probability(intervals[i].left, intervals[i].right);
-        s += pow(intervals[i].elemNumber/n - p, 2.0) / p;
+        p = this->Probability(intervals[i].left, intervals[i].right, pow(2.0, 20.0));
+        s += pow((intervals[i].elemNumber/ (double)n) - p, 2.0) / p;
+        pSum += p; // для отладки сумма всех p должна быть равна 1
     }
     s *= (double) n;
 
     // TODO добавить сравнение результата с статистикой табличной
 
     return result;
+}
+
+// Вычисление значения функции плотности распределения Пирсона II типа
+// (значения v и beta уже определенны в объекте класса)
+double Statistics::f(double x)
+{
+    double result = 0.0;
+    result = 1.0 - pow(x, 2.0);
+    result /= 4.0;
+    result = pow(result, this->v);
+    result /= (2.0 * this->betaValue);
+
+    return result;
+}
+
+// Вычисление вероятности (методом трапеций численного интегрирования)
+double Statistics::Probability(double a, double b, int stepCount)
+{
+    double sum = 0.0;
+    double diff = abs(b - a);
+    double step = diff / (double) stepCount;
+    for(int i = 0; i < stepCount; i++)
+    {
+        sum += this->f(a + (double)i * step);
+    }
+    sum += (this->f(a) + this->f(b)) / 2.0;
+    sum *= step;
+
+    return sum;
 }
 
 // Логарифм гамма-функции

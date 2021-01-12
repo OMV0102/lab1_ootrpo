@@ -36,9 +36,7 @@ void main()
     stat.GetTrimmedMean(sequence, 0.15);
     stat.GetWinsorizedMean(sequence, 0.25);
     cout << "\nbeta = " << stat.Beta(1.5, 1.5) << endl;
-    vector<intervalStruct> intervals;
-    bool res = stat.CheckNonZeroInterval(sequence, 25, &intervals);
-    cout << "\nres = " << res << endl;
+    stat.CheckChiSquaredTest(stat.DivideOnIntervals(sequence), sequence.size());
 
     //double res = sqrt(3.14159265358979323846) * stat.Gamma(5);
     //res /= 2.0;
