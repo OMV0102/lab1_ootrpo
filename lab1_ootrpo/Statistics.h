@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 
-static struct intervalStruct
+struct intervalStruct
 {
 	double left; // нижн€€ граница интервала
 	double right; // верхн€€ граница интервала
@@ -24,6 +24,7 @@ class Statistics
 	static double cof[cofSize]; // таблица коэффициентов дл€ GammaLn
 	double v; // параметр формы;
 	double betaValue; // параметр формы;
+	static double valuesChiSquared[31][11]; // таблица
 
 	// методы класса
 	public:
@@ -32,11 +33,12 @@ class Statistics
 	double GetMean(vector<double> elements);
 	double GetDispersion(vector<double> elements);
 	double GetMedian(vector<double> elements);
-	double GetTrimmedMean(vector<double> elements, double percent);
-	double GetWinsorizedMean(vector<double> elements, double percent);
+	double GetTrimmedMean(vector<double> elements, double alpha);
+	double GetWinsorizedMean(vector<double> elements, double alpha);
 	vector<intervalStruct> DivideOnIntervals(vector<double> elements);
 	bool CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals);
-	bool CheckChiSquaredTest(vector<intervalStruct> intervals, int n);
+	bool CheckChiSquaredTest(vector<intervalStruct> intervals, int n, double alpha);
+	double GetLimitValueChiSquared(int r, double alpha);
 	double f(double x); // вычисление значени€ функции плотности распределени€ ѕирсона II типа
 	double Probability(double a, double b, int stepCount); // вычисление веро€тности (методом трапеций численного интегрировани€)
 	double Beta(double x, double y); // ¬ычисление бета - функции дл€ x > 0, y > 0
