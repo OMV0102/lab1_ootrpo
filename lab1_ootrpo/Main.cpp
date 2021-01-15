@@ -7,7 +7,7 @@ using namespace std;
 
 void main()
 {
-    PRNG prng;
+    PRNG prng = PRNG(0);
     prng.SetV(0.5);
     vector<double> sequence;
     string errorMessage = "";
@@ -29,6 +29,8 @@ void main()
     //    }
     
     cout << "\nmedian = " << stat.GetMedian(sequence) << endl;
+
+    cout << "\nDispersion = " << stat.GetDispersion(sequence) << endl;
 
     cout << "\nTrimmedMean = " << stat.GetTrimmedMean(sequence, alpha) << endl;
 

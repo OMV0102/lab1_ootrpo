@@ -3,9 +3,12 @@
 #include "PRNG.h"
 
 // конструктор
-PRNG::PRNG(){}
-// деструктор
-PRNG::~PRNG(){}
+PRNG::PRNG(unsigned int seedNew)
+{
+	this->seed = seedNew;
+}
+PRNG::PRNG(){} // конструктор по умолчанию
+PRNG::~PRNG(){} // деструктор по умолчанию
 
 bool PRNG::GetSequence(int size, vector<double>*sequence, string *errorMessage)
 {
@@ -14,7 +17,7 @@ bool PRNG::GetSequence(int size, vector<double>*sequence, string *errorMessage)
 	{
 		if(size < 1) throw "Размер последовательности не должен быть меньше 1!";
 		default_random_engine engine;
-		engine.seed(time(0));
+		engine.seed(seed);
 		gamma_distribution<> gamma(this->alpha, this->beta);
 		vector<double> values(size); // вектор размером size (по дефолту нули)
 
@@ -35,6 +38,13 @@ bool PRNG::GetSequence(int size, vector<double>*sequence, string *errorMessage)
 	return true;
 }
 
+// получить начальное значение генератора
+unsigned int PRNG::GetSeed()
+{
+	return this->seed;
+}
+
+// параметр формы
 double PRNG::GetV()
 {
 	return this->v;

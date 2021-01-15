@@ -39,22 +39,23 @@ double Statistics::SumElements(vector<double> elements)
 double Statistics::GetMean(vector<double> elements)
 {
     double mean = 0.0;
-    mean = this->SumElements(elements) / (double) elements.size();
+    mean = this->SumElements(elements) / (double) elements.size(); // Сумма/размер
     return mean;
 }
 
 // Подсчет дисперсии числовой последовательности
 double Statistics::GetDispersion(vector<double> elements)
 {
-    double mean = this->GetMean(elements);
-    double disp = 0.0;
-    int N = elements.size();
-    // подсчет мат. ожидания как sum(elem[i]^2)/N - mean^2
+    double mean = this->GetMean(elements); // получение мат ожидания
+    double disp = 0.0; // значение дсиперсии
+    int N = elements.size(); // кол-во элементов
+    // подсчет мат. ожидания как sum(elem[i]^2)/N - M^2
     for(int i = 0; i < N; i++)
     {
-        disp += pow(elements[i] - mean, 2.0);
+        disp += pow(elements[i], 2.0); // sum(elem[i] ^ 2)
     }
-    disp /= (double) N;
+    disp /= (double) N; // sum/N
+    disp -= pow(mean, 2.0);
 
     return disp;
 }
@@ -65,7 +66,7 @@ double Statistics::GetMedian(vector<double> elements)
     double median = 0.0;
     int N = elements.size();
     if(N % 2 != 0) // для нечетного числа элементов
-        median = elements.at(N / 2); // элемент в серединеф последовательсноти
+        median = elements.at(N / 2); // элемент в середине последовательности
     else // для четного числа элементов
     {
         // среднее арифметическое двух центральных элементов
@@ -118,7 +119,7 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
     vector<intervalStruct> intervals;
     int elemNum = elements.size(); // количество элементов в последовательности
     int intervalNum = 2; // количество интервалов
-
+    vector<double> eSort = SortVector(elements, true);
     // определение начального количества интервалов
     if(elemNum >= 40 && elemNum <= 100)
         intervalNum = 10;
@@ -138,8 +139,8 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
             break;
         else
         {
-            intervalNum--;
-            if(intervalNum == 1) break; // мин разбитие это 2 интервала (страховка от отрицательного числа)
+            intervalNum -= 2;
+            if(intervalNum < 2) throw "Сгенерированную последовательность не удалось разбить на интервалы"; // мин разбитие это 2 интервала (страховка от отрицательного числа)
         }
     }
 
@@ -148,45 +149,77 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
 }
 
 // Проверка, что в каждом интервале есть хотя бы одно попадание
-// Если кол-во интервалов верно выбрано (return true), то в intervals буду границы интервалов
+// Если кол-во интервалов верно выбрано (return true?), то в intervals буду границы интервалов и количества попаданий
 bool Statistics::CheckNonZeroInterval(vector<double> elements, int intervalNum, vector<intervalStruct> *intervals)
 {
-    double intervalSize = 0.0; // Размер одного интервала
     vector<intervalStruct> vectorTemp; // временный вектор для хранения интервалов
-    intervalStruct temp;
+    intervalStruct temp; // хранение одного интервала перед добавление в vectorTemp
     bool result = true; // результат разделения последовательности на интервалы
     int elemNumAll = elements.size(); // количество элементов в последовательности
-    intervalSize = abs((elements[elemNumAll - 1] - elements[0]) / (double) intervalNum);
+    double intervalSize = abs((elements[elemNumAll - 1] - elements[0]) / (double) intervalNum);  // Размер одного интервала (только положительный)
+    //double intervalSize = abs((1.0 - (-1.0)) / (double) intervalNum);  // Размер одного интервала (только положительный) фиксированный
+    double delta = 1e-7; // точность сравнивания дробных чисел
+   
     elements = SortVector(elements, true); // сортируем элементы по возрастанию
     
-    
     int i = 0; // i индекс по интервалам
+    int j = 0; // j индекс по элементам последовательности
     while(result == true && i < intervalNum)
     {
-        temp.elemNumber = 0;
-        temp.left = elements[0] + i * intervalSize;
-        temp.right = elements[0] + (double)(i+1) * intervalSize;
-        int j = 0;
-        if(i == 0)// первый элемент[0] последовательности в любом случае будет в первом интервале
+        temp.elemNumber = 0; // инициализация попаданий элементов в интервал
+        
+        if(i > 0 && i < intervalNum - 1) // интервалы кроме первого и последнего
+        {
+            temp.left = vectorTemp[i-1].right; // левая граница это правая граница прошлого интервала
+            temp.right = elements[0] + (double)(i+1) * intervalSize; // правая граница
+        }
+        else
+        {
+            if(i == 0) // отдельно если первый интервал
+            {
+                //temp.left = -1.0;
+                temp.left = elements[0]; // левая граница это первый элемент т.к. отсортирована последовательность
+                temp.right = elements[0] + (double) (i+1) * intervalSize; // правая граница
+                temp.elemNumber++; j++; // первый элемент по любому будет в первом интервале
+            }
+
+            if(i == intervalNum - 1) // отдельно если последний интервал
+            {
+                temp.left = vectorTemp[i - 1].right; // левая граница это правая граница прошлого интервала
+                temp.right = elements[elemNumAll-1]; // правая граница это ппоследний элемент т.к. отсортирована последовательность
+                //temp.right = 1.0;
+            }
+        }
+
+        while(j < elemNumAll)
+        {
+            if(temp.left < elements[j] && elements[j] < temp.right)  // просматриваем элементы в границах и добавляем в интервалы
+            {
+                temp.elemNumber++; // увеличиваем кол-во попаданий в интервал
+                j++; // след элемент последовательности
+            }
+            else
+                break;
+        }
+        if(elements[j] - temp.right < delta) // просматриваем последний потенциальный элемент интервала на равенство правой границе
         {
             temp.elemNumber++;
-            j = 1;
+            j++;
         }
-        else 
-            j = 0;
 
-        for(j; j < elemNumAll; j++)
-        {
-            if(temp.left < elements[j] && elements[j] <= temp.right)
-                temp.elemNumber++;
-        }
-        vectorTemp.push_back(temp);
-        if(temp.elemNumber < 1) result = false;
-        i++;
+        vectorTemp.push_back(temp); // Добавление элемента в вектор
+        
+        if(temp.elemNumber < 1) // Если попаданий в очередном интервале 0, значит выход
+            result = false;
+        else
+            result = true;
+        
+        i++; // следующий интервал
     }
-    if(result == true) *intervals = vectorTemp;
 
-    return result;
+    *intervals = vectorTemp; // возвращаем интервалы в параметр
+
+    return result; // возврат true/false в зависимости от того получилось или нет поделить на интервалы
 }
 
 // Проверка сгенерированной последовательности методом хи-квадрат Пирсона
@@ -215,9 +248,10 @@ bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals, int n, do
     return result;
 }
 
+// Получение максимально допустимых значений статистик из таблицы
 double Statistics::GetLimitValueChiSquared(int r, double alpha)
 {
-    if(0 < r || r > 30) return 0.0; // если степени свободы не от 0 до 30, то не искать
+    if(0 > r || r > 30) return 0.0; // если степени свободы не от 0 до 30, то не искать
     int aSize = size(this->valuesChiSquared[0]);
     int aIndex = -1;
     double result = 0.0;
