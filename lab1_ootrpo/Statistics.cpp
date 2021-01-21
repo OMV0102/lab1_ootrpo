@@ -55,7 +55,7 @@ double Statistics::GetDispersion(vector<double> elements)
         disp += pow(elements[i], 2.0); // sum(elem[i] ^ 2)
     }
     disp /= (double) N; // sum/N
-    disp -= pow(mean, 2.0);
+    disp -= pow(mean, 2.0); // ... - M^2
 
     return disp;
 }
@@ -80,14 +80,14 @@ double Statistics::GetMedian(vector<double> elements)
 double Statistics::GetTrimmedMean(vector<double> elements, double alpha)
 {
     double trMean = 0.0;
-    int k = (int)(elements.size() * alpha);
+    int k = (int)(elements.size() * alpha); // Количество элементов, которое уберется из последовательности в начале и конце
     if((2*k + 1) > elements.size()) throw "Количество элементом слишком мало, чтобы посчитать усеченное среднее для заданного процента усечения!";
-    elements = this->SortVector(elements, true);
+    elements = this->SortVector(elements, true); // Сортировка
     // удаление k элементов в начале и конце
     for(int i = 0; i < k; i++)
     {
-        elements.erase(elements.begin());
-        elements.pop_back();
+        elements.erase(elements.begin()); // Удаление в начале одного элемента
+        elements.pop_back(); // Удаление в конце одного элемента
     }
     // подсчет обычного среднего без удаленных элементов
     trMean = this->GetMean(elements);
@@ -98,17 +98,17 @@ double Statistics::GetTrimmedMean(vector<double> elements, double alpha)
 double Statistics::GetWinsorizedMean(vector<double> elements, double alpha)
 {
     double trMean = 0.0;
-    int N = elements.size();
-    int k = (int) (N * alpha);
+    int N = elements.size(); // Размер последовательности
+    int k = (int) (N * alpha); // Количество элементов, которое будет заменяться в начале и конце 
     if((2*k) > elements.size()) throw "Количество элементом слишком мало, чтобы посчитать винзорированное среднее для заданного процента!";
-    elements = this->SortVector(elements, true);
-    // замена k элементов в начале и конце на k+1 (или N-k-1)
+    elements = this->SortVector(elements, true); //Сортировка
+    // замена k элементов в начале и конце на k+1 (и N-k-1)
     for(int i = 0; i < k; i++)
     {
-        elements[i] = elements[k];
-        elements[N-1-i] = elements[N-1-k];
+        elements[i] = elements[k]; // Заменяетрся элемент в начале
+        elements[N-1-i] = elements[N-1-k]; // Заменяетрся элемент в конце
     }
-    // подсчет обычного среднего без удаленных элементов
+    // подсчет обычного среднего с замененными элементов
     trMean = this->GetMean(elements);
     return trMean;
 }
@@ -121,12 +121,14 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
     int intervalNum = 2; // количество интервалов
     vector<double> eSort = SortVector(elements, true);
     // определение начального количества интервалов
-    if(elemNum >= 40 && elemNum <= 100)
-        intervalNum = 10;
+    if(elemNum >= 10 && elemNum <= 40)
+        intervalNum = 9;
+    else if(elemNum >= 40 && elemNum <= 100)
+        intervalNum = 11;
     else if(elemNum >=100  && elemNum <= 500)
         intervalNum = 15;
     else if(elemNum >= 500 && elemNum <= 1000)
-        intervalNum = 20;
+        intervalNum = 21;
     else if(elemNum >= 1000 && elemNum <= 10000)
         intervalNum = 25;
     else if(elemNum >= 10000)
@@ -134,12 +136,15 @@ vector<intervalStruct> Statistics::DivideOnIntervals(vector<double> elements)
 
     while(true)
     {
+        // получение интервалов с заданным их числом
         bool res = CheckNonZeroInterval(elements, intervalNum, &intervals);
-        if(res == true)
+        if(res == true) // если разделение удалось
             break;
-        else
+        else // иначе уменьшаем число интервалов
         {
-            intervalNum -= 2;
+            if(intervalNum <= 6) intervalNum--;
+            else intervalNum -= 2;
+
             if(intervalNum < 2) throw "Сгенерированную последовательность не удалось разбить на интервалы"; // мин разбитие это 2 интервала (страховка от отрицательного числа)
         }
     }
@@ -240,7 +245,7 @@ bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals, int n, do
 
     // Проверка посчитанного значения с максимальным допустимым в таблице
     double sMax = GetLimitValueChiSquared(N - 1, alpha);
-    if(s < sMax)
+    if(s < sMax) // если посчитанная статистика меньше предельной
         result = true;
     else
         result = false;
@@ -251,22 +256,23 @@ bool Statistics::CheckChiSquaredTest(vector<intervalStruct> intervals, int n, do
 // Получение максимально допустимых значений статистик из таблицы
 double Statistics::GetLimitValueChiSquared(int r, double alpha)
 {
-    if(0 > r || r > 30) return 0.0; // если степени свободы не от 0 до 30, то не искать
-    int aSize = size(this->valuesChiSquared[0]);
-    int aIndex = -1;
-    double result = 0.0;
-    double delta = 1e-4; // точность сравнивания дробных чисел
+    if(r < 0 || r > 30) return 0.0; // если степени свободы не от 0 до 30, то не искать
+    int aSize = size(this->valuesChiSquared[0]); // Количество уровней значимости
+    int aIndex = -1; // Найденный индект заданного уровня значимости
+    double result = 0.0; // Значение табличной статистики
+    double delta = 1e-4; // Точность сравнивания дробных чисел
 
-    for(int i = 0; i < aSize; i++)
+    for(int i = 0; i < aSize; i++) // проход по первой строке
     {
+        // поиск нужного столбца с уровнем значимости
         if((valuesChiSquared[0][i] - alpha) < delta)
         {
-            aIndex = i;
-            break;
+            aIndex = i; // индекс столбца найден
+            break; // выход из for
         }
     }
     if(aIndex < 0)  return 0.0;
-    result = valuesChiSquared[r][aIndex];
+    result = valuesChiSquared[r][aIndex]; // получаем значение
     return result;
 }
 
@@ -287,14 +293,15 @@ double Statistics::f(double x)
 double Statistics::Probability(double a, double b, int stepCount)
 {
     double sum = 0.0;
-    double diff = abs(b - a);
-    double step = diff / (double) stepCount;
+    double diff = abs(b - a); // расстояние промежутка (только положительное)
+    double step = diff / (double) stepCount; // размер шага
     for(int i = 0; i < stepCount; i++)
     {
+        // для каждого разбиения с шагом подсчитываем значение функции плотности
         sum += this->f(a + (double)i * step);
     }
-    sum += (this->f(a) + this->f(b)) / 2.0;
-    sum *= step;
+    sum += (this->f(a) + this->f(b)) / 2.0; // прибаляем к значениию полусумму значения f от границ
+    sum *= step; // умножение полученного результата на размер шага
 
     return sum;
 }
@@ -341,13 +348,14 @@ double Statistics::Gamma(double x)
 // Бета-функция
 double Statistics::Beta(double x, double y)
 {
+    // return Gamma(x) * Gamma(y) / Gamma(x + y);
     return(exp(GammLn(x) + GammLn(y) - GammLn(x + y)));
 }
 
 // Таблица допустимых значений
 double Statistics::valuesChiSquared[31][11] =
 {
-    {0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.025, 0.01, 0.005, 0.001, 0.0005},
+    {0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.025, 0.01, 0.005, 0.001, 0.0005},         // уровни значимости
     {0.454936423, 0.708326301, 1.074194171, 1.642374415, 2.705543454, 3.841458821, 5.023886187, 6.634896601, 7.879438577, 10.82756617, 12.11566515},
     {1.386294361, 1.832581464, 2.407945609, 3.218875825, 4.605170186, 5.991464547, 7.377758908, 9.210340372, 10.59663473, 13.81551056, 15.20180492},
     {2.365973884, 2.946166073, 3.664870783, 4.641627676, 6.251388631, 7.814727903, 9.348403604, 11.34486673, 12.83815647, 16.2662362, 17.72999623},
